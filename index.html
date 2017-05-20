@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>大学英语四、六级考试(含口试)成绩查询</title>
+    <link rel="stylesheet" type="text/css" href="css/css.css">
+</head>
+<body>
+    <p class="tips">本页面由鲁大学生网开发，不会获取、统计或储存您的任何个人信息，请放心使用</p>
+    <div id="search-box" style="display: block;">
+        <div class="form">
+            <input type="text" name="" id="sid" placeholder="请输入15位笔试或口试准考证号" />
+            <input type="text" name="" id="sname" placeholder="请输入姓名，超过3个字，可只输入前3个" />
+        </div>
+        <div class="padded">
+            <button id="submit">查询</button>
+        </div>
+    </div>
+    <div id="result" style="display: block;">
+        <h3 id="title">2016年下半年全国大学英语四、六级考试(含口试)成绩查询结果</h3>
+        <div class="row">
+            <label>姓名：</label>
+            <p id="name"></p>
+        </div>
+        <div class="row">
+            <label>学校：</label>
+            <p id="school"></p>
+        </div>
+        <div class="row">
+            <label>考试级别：</label>
+            <p id="level"></p>
+        </div>
+        <p class="item-title">笔试成绩</p>
+        <div class="row">
+            <label>准考证号：</label>
+            <p id="id"></p>
+        </div>
+        <div class="row">
+            <label>总分：</label>
+            <p id="score"></p>
+        </div>
+        <div class="row">
+            <label>听力：</label>
+            <p id="tingli_score"></p>
+        </div>
+        <div class="row">
+            <label>阅读：</label>
+            <p id="yuedu_score"></p>
+        </div>
+        <div class="row">
+            <label>写作和翻译：</label>
+            <p id="xiezuo_score"></p>
+        </div>
+        <p class="item-title">口试成绩</p>
+        <div class="row">
+            <label>准考证号：</label>
+            <p id="space_id"></p>
+        </div>
+        <div class="row">
+            <label>等级：</label>
+            <p id="space"></p>
+        </div>
+        <a href="javascript:void(0)" id="back">返回</a>
+    </div>
+    <script type="text/javascript">
+        window.onload = function(){
+            function get(id){
+                return document.getElementById(id);
+            }
+            var sid = get('sid');
+            var sname = get('sname');
+            var submitBtn = get('submit');
+
+            submitBtn.addEventListener('click',function(){
+                if (sid.value.trim().length != 15) {
+                    alert("请输入15位准考证号！");
+                    sid.focus();
+                    return false;
+                }
+                if (sname.value == "") {
+                    alert("请输入姓名！");
+                    sname.focus();
+                    return false;
+                }
+                if (sname.value.trim().length < 1) {
+                    alert("姓名不能少于1个字符！");
+                    sname.focus();
+                    return false;
+                }
+                submitBtn.setAttribute('disabled','disabled');
+                submitBtn.innerText = '正在查询...';
+                var data = 'sid='+sid.value+'&sname='+sname.value;
+                var xhr = new XMLHttpRequest();  // XMLHttpRequest对象用于在后台与服务器交换数据  
+                var url = 'http://127.0.0.1/testcha/curl.php?'+data;     
+                xhr.open('GET',url,true);
+                xhr.onreadystatechange=function(){
+                    if (xhr.readyState == 4 &&xhr.status == 200) {//xhr.readyState == 4代表执行完成
+                        var res =  eval('(' + xhr.responseText + ')');  //从服务器获得数据
+                        submitBtn.removeAttribute('disabled');
+                        submitBtn.innerText = '查询';
+                        
+                        if(res.name.trim() == ''){
+                            alert('准考证或姓名错误，未查询到结果');return;
+                        }
+
+                        get('search-box').style.display = 'none';
+
+                        get('name').innerText = res.name;
+                        get('school').innerText = res.school;
+                        get('level').innerText = res.level;
+                        get('id').innerText = res.id;
+                        get('score').innerText = res.score;
+                        get('tingli_score').innerText = res.tingli_score;
+                        get('yuedu_score').innerText = res.yuedu_score;
+                        get('xiezuo_score').innerText = res.xiezuo_score;
+                        get('space_id').innerText = res.space_id;
+                        get('space').innerText = res.space;
+
+                        get('result').style.display = 'block';
+                    }
+                };
+               xhr.send(null);
+
+            })
+
+            get('back').addEventListener('click',function(){
+                get('result').style.display = 'none';
+                get('search-box').style.display = 'block';
+            })
+        }
+    </script>
+</body>
+</html>
